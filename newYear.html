@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新年倒计时</title>
+    <link rel="stylesheet" href="base.css">
+    <style type="text/css">
+        @charset "utf-8";
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #323975;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Muli', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            text-align: center;
+        }
+
+        .fa-snowflake {
+            color: #fff;
+            position: absolute;
+            top: -20px;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(105vh);
+            }
+        }
+
+        .countdown-container {
+            display: flex;
+        }
+
+        .time {
+            display: flex;
+            font-size: 1.2em;
+            flex-direction: column;
+            margin: 0 15px;
+        }
+
+        .time h1 {
+            margin-bottom: 0;
+        }
+
+        .time small {
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="w100 df fr jcc aic tac ">
+        <div class="bdr50 bg  df fc jcc aic jcsa" style="height: 400px;font-size: 30px;color: white;">
+            <div class="timeShow"></div>
+            <div>距离2021年最后一天下班还有: <span class="XiaBanDaoJiShi">0 天 0 小时 0 分钟 0 秒</span></div>
+            <div>距离2022年还有: <span class="XinNianDaoJiShi">0 天 0 小时 0 分钟 0 秒</span></div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        window.onload = function (e) {
+            changeTime();
+            newYearComing();
+            XiaBanLa();
+            setInterval(() => {
+                createSnowFlake();
+            }, 10);
+            setInterval(() => {
+                changeTime();
+                newYearComing();
+                XiaBanLa();
+            }, 1000);
+        }
+        var changeTime = function () {
+            let timeShowHtml = document.querySelector(".timeShow");
+            let now = getTime();
+            let nowAsLongStr = now.formatAsStr_LONG();
+            timeShowHtml.innerHTML = nowAsLongStr;
+        }
+
+        var XiaBanLa = function () {
+            let t = "2021-12-31 17:30:00"
+            if(getTime(t).lt(new Date())){
+                return;
+            }
+            let XiaBanDaoJiShiHtml = document.querySelector(".XiaBanDaoJiShi");
+            XiaBanDaoJiShiHtml.innerHTML = getTime().calcBetweenDateDistance(null,t);
+        }
+
+        var newYearComing = function () {
+            let t = "2022-1-1 0:0:0"
+            if(getTime(t).lt(new Date())){
+                return;
+            }
+            let XinNianDaoJiShiHtml = document.querySelector(".XinNianDaoJiShi");
+            XinNianDaoJiShiHtml.innerHTML = getTime().calcBetweenDateDistance();
+        }
+
+        function createSnowFlake() {
+            const snowFlake = document.createElement('i');
+            snowFlake.innerText = generateFont();
+            snowFlake.classList.add('fas');
+            snowFlake.classList.add('fa-snowflake');
+            snowFlake.style.left = Math.random() * window.innerWidth + 'px';
+            snowFlake.style.animationDuration = Math.random() * 3 + 2 + 's'; // between 2 - 5 seconds
+            snowFlake.style.opacity = Math.random();
+            snowFlake.style.fontSize = Math.random() * 10 + 10 + 'px';
+
+            document.body.appendChild(snowFlake);
+
+            setTimeout(() => {
+                snowFlake.remove();
+            }, 5000)
+        }
+
+        function generateFont() {
+            let list = ['0', '1', '\u0032', '\u0030', '\u0032', '\u0032', '\u0021', '\u0020', '\u65b0', '\u5e74',
+                '\u5feb', '\u4e50'
+            ];
+            return list[(Math.floor((Math.random() * 100) % list.length))];
+        }
+
+        var getTime = function (time) {
+            function A() {
+                let dateObj = new Date();
+                if (typeof time === "number") {
+                    dateObj = new Date(time);
+                } else if (typeof time === "string") {
+                    time = time.replace(/[-\u4E00-\u9FA5]/g, '/');
+                    dateObj = new Date(Date.parse(time));
+                }
+                this.year = dateObj.getFullYear();
+                this.month = dateObj.getMonth() + 1;
+                this.date = dateObj.getDate();
+                this.hours = dateObj.getHours();
+                this.minutes = dateObj.getMinutes();
+                this.seconds = dateObj.getSeconds();
+                this.__dateVal__ = dateObj;
+            }
+            A.prototype.lt = function (compare) {
+                if (compare) {
+                    if (this.year < compare.getFullYear())
+                        return true;
+                    else if (this.year === compare.getFullYear() &&
+                        this.month - 1 < compare.getMonth())
+                        return true;
+                    else if (this.year === compare.getFullYear() &&
+                        this.month - 1 === compare.getMonth() &&
+                        this.date < compare.getDate())
+                        return true;
+                    else if (this.year === compare.getFullYear() &&
+                        this.month - 1 === compare.getMonth() &&
+                        this.date === compare.getDate() &&
+                        this.hours < compare.getHours())
+                        return true;
+                    else if (this.year === compare.getFullYear() &&
+                        this.month - 1 === compare.getMonth() &&
+                        this.date === compare.getDate() &&
+                        this.hours === compare.getHours() &&
+                        this.minutes < compare.getMinutes())
+                        return true;
+                    else if (this.year === compare.getFullYear() &&
+                        this.month - 1 === compare.getMonth() &&
+                        this.date === compare.getDate() &&
+                        this.hours === compare.getHours() &&
+                        this.minutes === compare.getMinutes() &&
+                        this.seconds < compare.getSeconds())
+                        return true;
+                }
+                return false;
+            }
+            A.prototype.gt = function (compare) {
+                return !this.lt(compare);
+            }
+           
+            A.prototype.formatAsStr_SHORTWITHOUTZERO = function (s1) {
+                if (s1 === void 0) s1 = "-"
+                let year = this.year + "";
+                let month = this.month + "";
+                let day = this.date + "";
+                return year + s1 + month + s1 + day;
+            }
+          
+            A.prototype.formatAsStr_LONGWITHOUTZERO = function (s1, s2) {
+                if (s1 === void 0) s1 = "-"
+                if (s2 === void 0) s2 = ":"
+                let year = this.year + "";
+                let month = this.month + "";
+                let day = this.date + "";
+                let hour = this.hours + "";
+                let minute = this.minutes + "";
+                let second = this.seconds + "";
+                return year + s1 + month + s1 + day + " " + hour + s2 + minute + s2 + second;
+            }
+          
+            A.prototype.formatAsStr_SHORT = function (s1) {
+                if (s1 === void 0) s1 = "-"
+                let year = this.year;
+                let month = (this.month + "").length > 1 ? (this.month + "") : (this.month + "").length == 1 ?
+                    "0" +
+                    this.month : "01";
+                let day = (this.date + "").length > 1 ? (this.date + "") : (this.date + "").length == 1 ? "0" +
+                    this
+                    .date : "01";
+                return year + s1 + month + s1 + day;
+            }
+            
+            A.prototype.formatAsStr_LONG = function (s1, s2) {
+                if (s1 === void 0) s1 = "-"
+                if (s2 === void 0) s2 = ":"
+                let year = this.year;
+                let month = (this.month + "").length > 1 ? (this.month + "") : (this.month + "").length == 1 ?
+                    "0" +
+                    this.month : "01";
+                let day = (this.date + "").length > 1 ? (this.date + "") : (this.date + "").length == 1 ? "0" +
+                    this
+                    .date : "01";
+                let hour = (this.hours + "").length > 1 ? (this.hours + "") : (this.hours + "").length == 1 ?
+                    "0" + this
+                    .hours : "00";
+                let minute = (this.minutes + "").length > 1 ? (this.minutes + "") : (this.minutes + "")
+                    .length == 1 ?
+                    "0" + this.minutes : "00";
+                let second = (this.seconds + "").length > 1 ? (this.seconds + "") : (this.seconds + "")
+                    .length == 1 ?
+                    "0" + this.seconds : "00";
+                return year + s1 + month + s1 + day + " " + hour + s2 + minute + s2 + second;
+            }
+           
+            A.prototype.calcBetweenDateDistance = function (begin, end) {
+                var startDate =  getTime(begin).formatAsStr_LONG(); //开始时间  
+                var endDate = getTime(end||"2022-1-1 0:0:0").__dateVal__; //结束时间  
+                
+                var distance = endDate.getTime() - new Date(startDate).getTime(); //时间差的毫秒数        
+
+                var days = Math.floor(distance / (24 * 3600 * 1000)) //计算出相差天数  
+                var leave1 = distance % (24 * 3600 * 1000) //计算天数后剩余的毫秒数  
+                var hours = Math.floor(leave1 / (3600 * 1000)) //计算出小时数  
+                var leave2 = leave1 % (3600 * 1000) //计算小时数后剩余的毫秒数  
+                var minutes = Math.floor(leave2 / (60 * 1000)) //计算相差分钟数  
+                var leave3 = leave2 % (60 * 1000) //计算分钟数后剩余的毫秒数  
+                var seconds = Math.round(leave3 / 1000) //计算相差秒数  
+                return days + " 天 " + hours + " 小时 " + minutes + " 分钟 " + seconds + " 秒";
+            }
+            return new A();
+
+        };
+    </script>
+</body>
+
+</html>
